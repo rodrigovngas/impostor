@@ -280,12 +280,8 @@
         justify-content: center;
         border-radius: 50%;
         flex-shrink: 0;
-        
-        /* RESTAURADO: Fondo degradado */
         background: linear-gradient(110deg, var(--accent) 0%, var(--accent) 15%, var(--accent-2) 100%);
         border: none;
-        
-        /* COLOR BLANCO EN EL SIGNO + */
         color: #ffffff;
         text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         box-shadow: 0 4px 15px rgba(20, 255, 0, 0.4), 0 0 20px rgba(155, 92, 231, 0.15);
@@ -377,18 +373,6 @@
     .bar-outer { width: 100%; height: 12px; background: var(--input-border); border-radius: 999px; overflow: hidden; }
     .bar-inner { height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 30%, var(--accent-2) 100%); transition: width 0.2s linear; }
 
-    .vote-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 16px;
-        border-radius: 50px;
-        background: var(--item-bg);
-        border: 1px solid var(--item-border);
-        color: var(--text-main);
-        margin-bottom: 6px;
-    }
-
     .result-text { font-size: 18px; font-weight: 700; color: var(--text-main); margin: 8px 0; }
     .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 
@@ -404,6 +388,51 @@
 
     @media (max-width: 420px){
         .timer-number { font-size: 44px; }
+    }
+
+    /* --- ESTILOS PARA VOTACIÓN CON TARJETAS (SELECCIÓN ÚNICA) --- */
+    .vote-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+        margin-top: 10px;
+    }
+
+    .vote-card {
+        background: var(--item-bg);
+        border: 2px solid var(--item-border);
+        border-radius: 16px;
+        padding: 16px 8px;
+        text-align: center;
+        color: var(--text-main);
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60px;
+        box-shadow: none;
+        opacity: 1;
+    }
+
+    /* Cuando una tarjeta está seleccionada */
+    .vote-card.voted {
+        background: var(--accent-2); /* Verde */
+        color: #000; /* Texto negro para contraste */
+        border-color: var(--accent-2);
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(20, 255, 0, 0.3);
+        z-index: 1;
+    }
+
+    /* Las tarjetas NO seleccionadas se ven un poco apagadas */
+    .vote-grid.has-selection .vote-card:not(.voted) {
+        opacity: 0.5;
+        transform: scale(0.95);
     }
 </style>
 </head>
@@ -456,7 +485,6 @@
                     <option value="180">3 minutos</option>
                     <option value="240">4 minutos</option>
                     <option value="300">5 minutos</option>
-                    <option value="360">6 minutos</option>
                 </select>
             </div>
             <div style="align-self:flex-end">
@@ -524,26 +552,15 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <div>
                 <div style="font-size:12px; color:var(--text-muted)">Votación</div>
-                <div style="font-weight:700; font-size:16px; color:var(--text-main)">¿Quién es el impostor?</div>
+                <div style="font-weight:700; font-size:16px; color:var(--text-main)">Toca al jugador a eliminar</div>
             </div>
         </div>
 
-        <label>Selecciona al sospechoso:</label>
-        <select id="voto" style="margin-bottom:10px"></select>
+        <div id="voteContainer" class="vote-grid"></div>
 
-        <div class="row">
-            <button onclick="registrarVoto()" style="flex:1">Votar</button>
-        </div>
-
-        <div style="margin-top:16px">
-            <label>Votos registrados:</label>
-            <div id="listaVotosContainer">
-                <div style="font-size:13px; color:var(--text-muted); font-style:italic;" id="noVotosMsg">Aún nadie ha votado.</div>
-                <ul id="listaVotos" style="list-style:none; padding:0; margin:0;"></ul>
-            </div>
-        </div>
-
-        <button style="margin-top:16px; width:100%" class="ghost" onclick="mostrarResultado()">Finalizar votación</button>
+        <button style="margin-top:8px; width:100%" class="ghost" onclick="mostrarResultado()">
+            Ver Resultados
+        </button>
     </div>
 
     <div id="resultado" class="card" style="display:none">
@@ -553,8 +570,8 @@
         </div>
 
         <div id="impostorGuessSection" style="margin-top:16px; padding:12px; border:1px solid var(--danger); border-radius:18px; background:rgba(255,107,107,0.1); display:none">
-            <label style="color:var(--danger); font-weight:700;">¡Oportunidad del Impostor!</label>
-            <p style="font-size:13px; margin:4px 0 8px 0; color:var(--text-main)">Si adivina la palabra, gana la partida.</p>
+            <label style="color:var(--danger); font-weight:700;">¡Sin Yolanda Impostor!</label>
+            <p style="font-size:13px; margin:4px 0 8px 0; color:var(--text-main)">Si adivinas la palabra, ganas la partida.</p>
             <div class="row">
                 <input type="text" id="guessInput" placeholder="¿Cuál era la palabra?" />
                 <button class="danger" onclick="impostorAdivina()">Probar</button>
@@ -581,14 +598,24 @@
     const textToType = "El Impostor";
     let charIndex = 0;
 
+    /* --- LÓGICA DE MÁQUINA DE ESCRIBIR EN BUCLE --- */
     function typeWriter() {
         if (charIndex < textToType.length) {
             titleElement.textContent += textToType.charAt(charIndex);
             charIndex++;
             setTimeout(typeWriter, 120);
+        } else {
+            // Cuando termina de escribir, espera 7 segundos
+            setTimeout(() => {
+                // Borra el texto y reinicia el proceso
+                titleElement.textContent = '';
+                charIndex = 0;
+                typeWriter();
+            }, 10000); 
         }
     }
     setTimeout(typeWriter, 300);
+
 
     /* LOGICA DEL JUEGO */
     let palabras = [];
@@ -741,8 +768,7 @@
 
     function nuevaRonda(){
         votos = {};
-        document.getElementById('listaVotos').innerHTML = '';
-        document.getElementById('noVotosMsg').style.display = 'block';
+        // Limpieza de estados anteriores
         document.getElementById('guessFeedback').innerText = '';
         document.getElementById('guessInput').value = '';
         document.getElementById('impostorGuessSection').style.display = 'none';
@@ -870,32 +896,50 @@
         mostrarSeccion('votacion');
     }
 
+    /* --- LOGICA DE VOTACIÓN (VOTO ÚNICO) --- */
     function prepararVotacion(){
-        const sel = document.getElementById('voto');
-        sel.innerHTML = '';
-        jugadores.forEach(j => {
-            const opt = document.createElement('option');
-            opt.value = j;
-            opt.textContent = j;
-            sel.appendChild(opt);
+        const container = document.getElementById('voteContainer');
+        container.innerHTML = ''; 
+        container.classList.remove('has-selection'); // Resetear estado visual
+        votos = {}; 
+        
+        jugadores.forEach(jugador => {
+            const btn = document.createElement('button');
+            btn.className = 'vote-card';
+            btn.innerText = jugador;
+            
+            // Guardamos el nombre original para poder restaurarlo si cambiamos de voto
+            btn.dataset.originalName = jugador;
+            
+            btn.onclick = function() {
+                registrarVotoUnico(jugador, btn);
+            };
+            
+            container.appendChild(btn);
         });
-        document.getElementById('listaVotos').innerHTML = '';
-        document.getElementById('noVotosMsg').style.display = 'block';
-        votos = {};
     }
 
-    function registrarVoto(){
-        const elegido = document.getElementById('voto').value;
-        if(!elegido) return;
-        
-        votos[elegido] = (votos[elegido] || 0) + 1;
+    function registrarVotoUnico(elegido, btnElement){
+        // 1. Lógica: Solo existe 1 voto en todo el juego (el del expulsado)
+        votos = {}; 
+        votos[elegido] = 1;
 
-        const li = document.createElement('li');
-        li.className = 'vote-item';
-        li.innerHTML = `<span>Un voto para <strong>${elegido}</strong></span>`;
+        // 2. Visual: Limpiar selección de todos los otros botones
+        const container = document.getElementById('voteContainer');
+        container.classList.add('has-selection'); // Activa el efecto de opacidad en los no elegidos
+
+        const allBtns = container.querySelectorAll('.vote-card');
+        allBtns.forEach(b => {
+            b.classList.remove('voted');
+            b.innerText = b.dataset.originalName; // Restaurar texto original
+        });
+
+        // 3. Visual: Marcar el nuevo seleccionado
+        btnElement.classList.add('voted');
+        btnElement.innerText = "Eliminar a\n" + elegido; // Feedback visual claro
         
-        document.getElementById('noVotosMsg').style.display = 'none';
-        document.getElementById('listaVotos').appendChild(li);
+        // Vibración suave
+        if(navigator.vibrate) navigator.vibrate(50);
     }
 
     function mostrarResultado(){
