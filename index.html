@@ -24,7 +24,7 @@
         --item-border: #f0f2ff;
 
         --accent: #9b5ce7;
-        --accent-2: #14ff00;
+        --accent-2: #14ff00; /* Verde Fosfo */
         --danger: #ff6b6b;
     }
 
@@ -197,7 +197,7 @@
         border-color: var(--accent-2);
     }
 
-    /* --- BOTONES GENERALES (Texto Blanco) --- */
+    /* --- BOTONES MINIMALISTAS (Solo contorno verde) --- */
     button {
         display: inline-flex;
         align-items: center;
@@ -205,19 +205,31 @@
         gap: 8px;
         padding: 12px 24px;
         border-radius: 50px;
-        border: none;
-        background: linear-gradient(110deg, var(--accent) 0%, var(--accent) 15%, var(--accent-2) 100%);
-        color: #ffffff;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        
+        /* CAMBIO: Fondo transparente y borde verde */
+        background: transparent;
+        border: 2px solid var(--accent-2);
+        color: var(--accent-2);
+        
+        text-shadow: none;
         font-weight: 700;
         cursor: pointer;
-        box-shadow: 0 4px 15px rgba(20, 255, 0, 0.4), 0 0 20px rgba(155, 92, 231, 0.15);
-        transition: transform .12s ease, opacity .12s;
+        
+        /* Sombra suave tipo neón en lugar de sombra sólida */
+        box-shadow: 0 0 10px rgba(20, 255, 0, 0.1);
+        
+        transition: transform .12s ease, background .2s, box-shadow .2s;
         font-size: 14px;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         user-select: none;
     }
+    
+    button:hover {
+        background: rgba(20, 255, 0, 0.05); /* Relleno muy sutil al pasar el mouse */
+        box-shadow: 0 0 15px rgba(20, 255, 0, 0.25);
+    }
+
     button:active { transform: scale(0.97); }
     
     button svg {
@@ -229,32 +241,35 @@
     button.ghost {
         background: transparent;
         color: var(--accent-2);
-        text-shadow: none;
-        box-shadow: none;
         border: 2px solid var(--accent-2);
-        opacity: 0.9;
+        opacity: 0.8;
     }
-    html.dark button.ghost {
-        color: var(--accent-2);
-        border-color: var(--accent-2);
+    button.ghost:hover {
+        opacity: 1;
+        background: rgba(20, 255, 0, 0.05);
     }
     
+    /* Botón peligro: Minimalista pero en Rojo para mantener alerta */
     button.danger {
-        background: linear-gradient(90deg, #ff8a8a, #ff6b6b);
-        box-shadow: 0 4px 12px rgba(255,107,107,0.3);
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        background: transparent;
+        border: 2px solid var(--danger);
+        color: var(--danger);
+        box-shadow: none;
+    }
+    button.danger:hover {
+        background: rgba(255, 107, 107, 0.05);
+        box-shadow: 0 0 10px rgba(255, 107, 107, 0.2);
     }
 
-    /* Reset para toggle */
+    /* Reset para toggle de tema (excepción) */
     button.dark-toggle {
         background: transparent;
         box-shadow: none;
+        border: none;
         padding: 0;
         width: 40px;
         height: 40px;
         color: var(--text-main);
-        text-shadow: none;
     }
     button.dark-toggle:hover {
         background: rgba(128,128,128,0.1);
@@ -280,11 +295,16 @@
         justify-content: center;
         border-radius: 50%;
         flex-shrink: 0;
-        background: linear-gradient(110deg, var(--accent) 0%, var(--accent) 15%, var(--accent-2) 100%);
-        border: none;
-        color: #ffffff;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        box-shadow: 0 4px 15px rgba(20, 255, 0, 0.4), 0 0 20px rgba(155, 92, 231, 0.15);
+        
+        /* CAMBIO: Minimalista verde */
+        background: transparent;
+        border: 2px solid var(--accent-2);
+        color: var(--accent-2);
+        text-shadow: none;
+        box-shadow: none;
+    }
+    .smallbtn:hover {
+        background: rgba(20, 255, 0, 0.1);
     }
 
     /* ESTILOS DE LISTA */
@@ -307,6 +327,7 @@
     .btn-icon {
         background: transparent;
         box-shadow: none;
+        border: none; /* Icon buttons sin borde */
         padding: 0;
         width: 32px;
         height: 32px;
@@ -317,14 +338,13 @@
         border-radius: 50%;
         cursor: pointer;
         color: var(--text-muted);
-        text-shadow: none;
     }
     
-    .btn-delete { color: var(--danger); }
-    .btn-delete:hover { background: rgba(255, 107, 107, 0.1); }
+    .btn-delete { color: var(--danger); border: none; }
+    .btn-delete:hover { background: rgba(255, 107, 107, 0.1); box-shadow: none; }
 
-    .btn-edit { color: var(--accent); font-size: 16px; }
-    .btn-edit:hover { background: rgba(155, 92, 231, 0.1); }
+    .btn-edit { color: var(--accent); font-size: 16px; border: none; }
+    .btn-edit:hover { background: rgba(155, 92, 231, 0.1); box-shadow: none; }
 
     .assign-name { font-size: 20px; font-weight: 700; color: var(--text-main); }
     
@@ -333,7 +353,7 @@
         padding: 24px 16px;
         border-radius: 16px;
         background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
-        border: 2px solid var(--accent);
+        border: 2px solid var(--accent-2); /* Borde verde para la caja de revelación */
         color: white;
         text-align: center;
         font-weight: 700;
@@ -371,7 +391,9 @@
     .timer-wrap { display: flex; flex-direction: column; gap: 8px; align-items: center; }
     .timer-number { font-size: 48px; font-weight: 800; color: var(--text-main); }
     .bar-outer { width: 100%; height: 12px; background: var(--input-border); border-radius: 999px; overflow: hidden; }
-    .bar-inner { height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 30%, var(--accent-2) 100%); transition: width 0.2s linear; }
+    
+    /* Barra de progreso verde */
+    .bar-inner { height: 100%; width: 100%; background: var(--accent-2); box-shadow: 0 0 10px var(--accent-2); transition: width 0.2s linear; }
 
     .result-text { font-size: 18px; font-weight: 700; color: var(--text-main); margin: 8px 0; }
     .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
@@ -419,13 +441,13 @@
         opacity: 1;
     }
 
-    /* Cuando una tarjeta está seleccionada */
+    /* Cuando una tarjeta está seleccionada: Minimalista Verde */
     .vote-card.voted {
-        background: var(--accent-2); /* Verde */
-        color: #000; /* Texto negro para contraste */
+        background: rgba(20, 255, 0, 0.08); /* Fondo muy suave transparente */
+        color: var(--accent-2); 
         border-color: var(--accent-2);
         transform: scale(1.05);
-        box-shadow: 0 4px 15px rgba(20, 255, 0, 0.3);
+        box-shadow: 0 0 15px rgba(20, 255, 0, 0.2);
         z-index: 1;
     }
 
@@ -887,7 +909,7 @@
         
         const bar = document.getElementById('timerBar');
         if(pct < 0.2) bar.style.background = 'var(--danger)';
-        else bar.style.background = 'linear-gradient(90deg, var(--accent), var(--accent-2))';
+        else bar.style.background = 'var(--accent-2)';
     }
 
     function saltarAPuesta(){
