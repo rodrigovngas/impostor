@@ -68,21 +68,18 @@
     /* ----------------------------------------------------
        FIX AGRESIVO PARA SCROLLBAR (SAFARI/CHROME)
     ---------------------------------------------------- */
-    
-    /* Regla general para ocultar barras en WebKit (Chrome, Safari, etc) */
     html::-webkit-scrollbar, 
     body::-webkit-scrollbar, 
     .app::-webkit-scrollbar, 
     ul::-webkit-scrollbar,
     *::-webkit-scrollbar { 
-        display: none; /* Método estándar */
-        width: 0 !important;  /* Forzar ancho 0 */
-        height: 0 !important; /* Forzar alto 0 */
-        background: transparent !important; /* Fondo transparente */
-        -webkit-appearance: none !important; /* Eliminar apariencia nativa */
+        display: none; 
+        width: 0 !important;
+        height: 0 !important; 
+        background: transparent !important; 
+        -webkit-appearance: none !important; 
     }
     
-    /* Firefox */
     html, body, .app, ul {
         scrollbar-width: none;  
         -ms-overflow-style: none;  
@@ -103,8 +100,6 @@
         
         overflow-x: hidden; 
         overflow-y: auto; 
-        
-        /* Bloqueo de rebote/actualizar */
         overscroll-behavior-y: none; 
         
         transition: all 0.4s ease;
@@ -996,11 +991,13 @@
         const guessSection = document.getElementById('impostorGuessSection');
         
         if(!masVotado){
-            res.innerHTML = `Nadie fue expulsado.<br>El impostor era <span style="color:var(--danger)">${impostor}</span>.`;
+            res.innerHTML = `Nadie fue expulsado.<br>El impostor era <span style="color:var(--danger)">${impostor}</span>.
+            <div style="margin-top:12px; font-size:18px; color:var(--text-muted)">La palabra era <strong style="color:var(--text-main)">${palabraSeleccionada}</strong></div>`;
             guessSection.style.display = 'none';
         } 
         else if(masVotado === impostor){
-            res.innerHTML = `¡Atraparon al Impostor! era <strong>${impostor}</strong>.`;
+            res.innerHTML = `¡Atraparon al Impostor! era <strong>${impostor}</strong>.
+            <div style="margin-top:12px; font-size:18px; color:var(--text-muted)">La palabra era <strong style="color:var(--text-main)">${palabraSeleccionada}</strong></div>`;
             guessSection.style.display = 'none';
         } 
         else {
