@@ -65,7 +65,23 @@
 
     * { -webkit-tap-highlight-color: transparent; }
 
-    /* LAYOUT GLOBAL */
+    /* ----------------------------------------------------
+       AJUSTES PARA SENTIRSE COMO APP NATIVA
+    ---------------------------------------------------- */
+    
+    /* 1. OCULTAR BARRA DE SCROLL (Pero permitir scroll) */
+    /* Chrome, Safari, Opera */
+    html::-webkit-scrollbar, body::-webkit-scrollbar, .app::-webkit-scrollbar, ul::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* IE, Edge y Firefox */
+    html, body, .app, ul {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+
+    /* 2. LAYOUT Y BLOQUEO DE PULL-TO-REFRESH */
     html, body {
         height: 100dvh;
         width: 100vw;
@@ -75,8 +91,13 @@
         background-image: radial-gradient(var(--dot-color) 1.5px, transparent 1.5px);
         background-size: 32px 32px;
         color: var(--text-main);
+        
         overflow-x: hidden; 
         overflow-y: auto; 
+        
+        /* ESTO BLOQUEA EL "DESLIZAR HACIA ABAJO PARA ACTUALIZAR" */
+        overscroll-behavior-y: none; 
+        
         transition: all 0.4s ease;
     }
 
@@ -133,6 +154,7 @@
     }
     @keyframes breath { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
 
+    /* --- ANIMACIÓN ICONO --- */
     .dark-toggle {
         cursor: pointer;
         background: var(--card-bg);
@@ -146,8 +168,22 @@
         transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
         box-shadow: var(--card-shadow);
     }
-    .dark-toggle:active { transform: scale(0.9); }
-    .dark-toggle svg { width: 22px; height: 22px; stroke-width: 2px; fill: none; stroke: currentColor; position: absolute; top: 50%; left: 50%; transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1); }
+    .dark-toggle:hover { transform: scale(1.05); }
+    .dark-toggle:active { transform: scale(0.95); }
+
+    .dark-toggle svg {
+        width: 22px;
+        height: 22px;
+        stroke-width: 2px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+        stroke: currentColor;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
 
     .icon-moon { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
     .icon-sun { opacity: 0; transform: translate(-50%, -50%) rotate(90deg) scale(0.5); }
@@ -338,7 +374,6 @@
         margin: 30px 0;
         line-height: 1;
         letter-spacing: -1.5px;
-        /* Animation removed as requested */
     }
     
     /* CAJA DE REVELAR (CON PULSACION) */
@@ -360,7 +395,6 @@
         justify-content: center;
         flex-direction: column;
         
-        /* AQUÍ ESTÁ LA PULSACIÓN UNICAMENTE EN LA CAJA */
         animation: boxPulse 2s infinite;
         
         width: 100%;
@@ -849,6 +883,7 @@
         btnReveal.style.display = 'flex';
     }
 
+    // Eventos Mouse/Touch
     btnReveal.addEventListener('mousedown', showContent);
     btnReveal.addEventListener('mouseup', hideContent);
     btnReveal.addEventListener('mouseleave', hideContent);
