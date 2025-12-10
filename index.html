@@ -66,22 +66,31 @@
     * { -webkit-tap-highlight-color: transparent; }
 
     /* ----------------------------------------------------
-       AJUSTES PARA SENTIRSE COMO APP NATIVA
+       FIX AGRESIVO PARA SCROLLBAR (SAFARI/CHROME)
     ---------------------------------------------------- */
     
-    /* 1. OCULTAR BARRA DE SCROLL (Pero permitir scroll) */
-    /* Chrome, Safari, Opera */
-    html::-webkit-scrollbar, body::-webkit-scrollbar, .app::-webkit-scrollbar, ul::-webkit-scrollbar {
-        display: none;
+    /* Regla general para ocultar barras en WebKit (Chrome, Safari, etc) */
+    html::-webkit-scrollbar, 
+    body::-webkit-scrollbar, 
+    .app::-webkit-scrollbar, 
+    ul::-webkit-scrollbar,
+    *::-webkit-scrollbar { 
+        display: none; /* Método estándar */
+        width: 0 !important;  /* Forzar ancho 0 */
+        height: 0 !important; /* Forzar alto 0 */
+        background: transparent !important; /* Fondo transparente */
+        -webkit-appearance: none !important; /* Eliminar apariencia nativa */
     }
     
-    /* IE, Edge y Firefox */
+    /* Firefox */
     html, body, .app, ul {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
+        scrollbar-width: none;  
+        -ms-overflow-style: none;  
     }
 
-    /* 2. LAYOUT Y BLOQUEO DE PULL-TO-REFRESH */
+    /* ----------------------------------------------------
+       LAYOUT
+    ---------------------------------------------------- */
     html, body {
         height: 100dvh;
         width: 100vw;
@@ -95,7 +104,7 @@
         overflow-x: hidden; 
         overflow-y: auto; 
         
-        /* ESTO BLOQUEA EL "DESLIZAR HACIA ABAJO PARA ACTUALIZAR" */
+        /* Bloqueo de rebote/actualizar */
         overscroll-behavior-y: none; 
         
         transition: all 0.4s ease;
